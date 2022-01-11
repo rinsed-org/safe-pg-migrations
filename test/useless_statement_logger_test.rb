@@ -7,7 +7,6 @@ class UselessStatementLoggerTest < MiniTest::Unit::TestCase
     SafePgMigrations.instance_variable_set(:@config, nil)
     @connection = ActiveRecord::Base.connection
     @verbose_was = ActiveRecord::Migration.verbose
-    @connection.drop_table(:schema_migrations, if_exists: true)
     @connection.create_table(:schema_migrations) { |t| t.string :version }
     ActiveRecord::SchemaMigration.create_table
     ActiveRecord::Migration.verbose = false
