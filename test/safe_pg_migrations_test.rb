@@ -272,101 +272,109 @@ class SafePgMigrationsTest < Minitest::Test
     end
   end
 
-  # def test_create_table_idem_potent
-  #   @connection.create_table(:users) { |t| t.string :email }
-  #   @migration =
-  #     Class.new(ActiveRecord::Migration::Current) do
-  #       def change
-  #         create_table :users do |t|
-  #           t.string :email
-  #         end
-  #       end
-  #     end.new
+  def test_create_table_idem_potent
+    skip 'skipping disabled idempotent tests'
 
-  #   write_calls = record_calls(@migration, :write) { run_migration }.map(&:first)
+    @connection.create_table(:users) { |t| t.string :email }
+    @migration =
+      Class.new(ActiveRecord::Migration::Current) do
+        def change
+          create_table :users do |t|
+            t.string :email
+          end
+        end
+      end.new
 
-  #   assert_equal [
-  #     '== 8128 : migrating ===========================================================',
-  #     '-- create_table(:users)',
-  #     "   -> /!\\ Table 'users' already exists.",
-  #     '   -> -- Skipping statement',
-  #   ], write_calls[0...4]
-  # end
+    write_calls = record_calls(@migration, :write) { run_migration }.map(&:first)
 
-  # def test_add_column_idem_potent
-  #   @connection.create_table(:users) { |t| t.string :email }
-  #   @migration =
-  #     Class.new(ActiveRecord::Migration::Current) do
-  #       def change
-  #         2.times { add_column :users, :name, :string }
-  #       end
-  #     end.new
-  #   write_calls = record_calls(@migration, :write) { run_migration }.map(&:first)
+    assert_equal [
+      '== 8128 : migrating ===========================================================',
+      '-- create_table(:users)',
+      "   -> /!\\ Table 'users' already exists.",
+      '   -> -- Skipping statement',
+    ], write_calls[0...4]
+  end
 
-  #   assert_equal [
-  #     '== 8128 : migrating ===========================================================',
-  #     '-- add_column(:users, :name, :string)',
-  #   ], write_calls[0...2]
+  def test_add_column_idem_potent
+    skip 'skipping disabled idempotent tests'
 
-  #   assert_equal [
-  #     '-- add_column(:users, :name, :string)',
-  #     "   -> /!\\ Column 'name' already exists in 'users'. Skipping statement.",
-  #   ], write_calls[3..4]
-  # end
+    @connection.create_table(:users) { |t| t.string :email }
+    @migration =
+      Class.new(ActiveRecord::Migration::Current) do
+        def change
+          2.times { add_column :users, :name, :string }
+        end
+      end.new
+    write_calls = record_calls(@migration, :write) { run_migration }.map(&:first)
 
-  # def test_remove_column_idem_potent
-  #   @connection.create_table(:users) { |t| t.string :email, index: true }
-  #   @migration =
-  #     Class.new(ActiveRecord::Migration::Current) do
-  #       def change
-  #         2.times { remove_column :users, :email }
-  #       end
-  #     end.new
+    assert_equal [
+      '== 8128 : migrating ===========================================================',
+      '-- add_column(:users, :name, :string)',
+    ], write_calls[0...2]
 
-  #   write_calls = record_calls(@migration, :write) { run_migration }.map(&:first)
-  #   refute @connection.index_exists?(:users, :email)
+    assert_equal [
+      '-- add_column(:users, :name, :string)',
+      "   -> /!\\ Column 'name' already exists in 'users'. Skipping statement.",
+    ], write_calls[3..4]
+  end
 
-  #   assert_equal [
-  #     '== 8128 : migrating ===========================================================',
-  #     '-- remove_column(:users, :email)',
-  #   ], write_calls[0...2]
+  def test_remove_column_idem_potent
+    skip 'skipping disabled idempotent tests'
 
-  #   assert_equal [
-  #     '-- remove_column(:users, :email)',
-  #     "   -> /!\\ Column 'email' not found on table 'users'. Skipping statement.",
-  #   ], write_calls[3..4]
+    @connection.create_table(:users) { |t| t.string :email, index: true }
+    @migration =
+      Class.new(ActiveRecord::Migration::Current) do
+        def change
+          2.times { remove_column :users, :email }
+        end
+      end.new
 
-  #   assert_equal write_calls.length, 8
-  #   refute @connection.index_exists?(:users, :email)
-  # end
+    write_calls = record_calls(@migration, :write) { run_migration }.map(&:first)
+    refute @connection.index_exists?(:users, :email)
 
-  # def test_remove_index_idem_potent
-  #   @connection.create_table(:users) { |t| t.string(:email, index: true) }
-  #   @migration =
-  #     Class.new(ActiveRecord::Migration::Current) do
-  #       def change
-  #         2.times { remove_index :users, :email }
-  #       end
-  #     end.new
+    assert_equal [
+      '== 8128 : migrating ===========================================================',
+      '-- remove_column(:users, :email)',
+    ], write_calls[0...2]
 
-  #   write_calls = record_calls(@migration, :write) { run_migration }.map(&:first)
-  #   refute @connection.index_exists?(:users, :email)
+    assert_equal [
+      '-- remove_column(:users, :email)',
+      "   -> /!\\ Column 'email' not found on table 'users'. Skipping statement.",
+    ], write_calls[3..4]
 
-  #   assert_equal [
-  #     '== 8128 : migrating ===========================================================',
-  #     '-- remove_index(:users, :email)',
-  #     '   -> remove_index("users", {:column=>:email, :algorithm=>:concurrently})',
-  #   ], write_calls[0...3]
+    assert_equal write_calls.length, 8
+    refute @connection.index_exists?(:users, :email)
+  end
 
-  #   assert_equal [
-  #     '-- remove_index(:users, :email)',
-  #     '   -> remove_index("users", {:column=>:email, :algorithm=>:concurrently})',
-  #     "   -> /!\\ Index 'index_users_on_email' not found on table 'users'. Skipping statement.",
-  #   ], write_calls[4...7]
+  def test_remove_index_idem_potent
+    skip 'skipping disabled idempotent tests'
 
-  #   assert_equal write_calls.length, 10
-  #   refute @connection.index_exists?(:users, :email)
-  # end
+    @connection.create_table(:users) { |t| t.string(:email, index: true) }
+    @migration =
+      Class.new(ActiveRecord::Migration::Current) do
+        def change
+          2.times { remove_index :users, :email }
+        end
+      end.new
+
+    write_calls = record_calls(@migration, :write) { run_migration }.map(&:first)
+    refute @connection.index_exists?(:users, :email)
+
+    assert_equal [
+      '== 8128 : migrating ===========================================================',
+      '-- remove_index(:users, :email)',
+      '   -> remove_index("users", {:column=>:email, :algorithm=>:concurrently})',
+    ], write_calls[0...3]
+
+    assert_equal [
+      '-- remove_index(:users, :email)',
+      '   -> remove_index("users", {:column=>:email, :algorithm=>:concurrently})',
+      "   -> /!\\ Index 'index_users_on_email' not found on table 'users'. Skipping statement.",
+    ], write_calls[4...7]
+
+    assert_equal write_calls.length, 10
+    refute @connection.index_exists?(:users, :email)
+  end
 
   def test_change_table
     @connection.create_table(:users)
@@ -421,29 +429,31 @@ class SafePgMigrationsTest < Minitest::Test
     refute @connection.index_exists?(:users, :email)
   end
 
-  # def test_add_index_idem_potent
-  #   @connection.create_table(:users) { |t| t.string :email }
-  #   @migration =
-  #     Class.new(ActiveRecord::Migration::Current) do
-  #       def change
-  #         2.times { add_index(:users, :email, name: :my_custom_index_name, where: 'email IS NOT NULL') }
-  #       end
-  #     end.new
+  def test_add_index_idem_potent
+    skip 'skipping disabled idempotent tests'
 
-  #   calls = record_calls(@connection, :execute) { run_migration }
+    @connection.create_table(:users) { |t| t.string :email }
+    @migration =
+      Class.new(ActiveRecord::Migration::Current) do
+        def change
+          2.times { add_index(:users, :email, name: :my_custom_index_name, where: 'email IS NOT NULL') }
+        end
+      end.new
 
-  #   assert_calls [
-  #     'SET statement_timeout TO 0',
-  #     'SET lock_timeout TO 0',
-  #     'CREATE INDEX CONCURRENTLY "my_custom_index_name" ON "users" ("email") WHERE email IS NOT NULL',
-  #     "SET lock_timeout TO '5s'",
-  #     "SET statement_timeout TO '70s'",
-  #     'SET statement_timeout TO 0',
-  #     'SET lock_timeout TO 0',
-  #     "SET lock_timeout TO '5s'",
-  #     "SET statement_timeout TO '70s'",
-  #   ], calls
-  # end
+    calls = record_calls(@connection, :execute) { run_migration }
+
+    assert_calls [
+      'SET statement_timeout TO 0',
+      'SET lock_timeout TO 0',
+      'CREATE INDEX CONCURRENTLY "my_custom_index_name" ON "users" ("email") WHERE email IS NOT NULL',
+      "SET lock_timeout TO '5s'",
+      "SET statement_timeout TO '70s'",
+      'SET statement_timeout TO 0',
+      'SET lock_timeout TO 0',
+      "SET lock_timeout TO '5s'",
+      "SET statement_timeout TO '70s'",
+    ], calls
+  end
 
   def test_change_column_with_timeout
     @connection.create_table(:users) { |t| t.string :email }
@@ -463,33 +473,35 @@ class SafePgMigrationsTest < Minitest::Test
     ], calls
   end
 
-  # def test_add_index_idem_potent_invalid_index
-  #   @connection.create_table(:users) { |t| t.string :email, index: true }
+  def test_add_index_idem_potent_invalid_index
+    skip 'skipping disabled idempotent tests'
 
-  #   @migration =
-  #     Class.new(ActiveRecord::Migration::Current) do
-  #       def change
-  #         add_index(:users, :email)
-  #       end
-  #     end.new
+    @connection.create_table(:users) { |t| t.string :email, index: true }
 
-  #   @connection.stubs(:index_valid?).returns(false)
-  #   calls = record_calls(@connection, :execute) { run_migration }
-  #   assert_calls [
-  #     'SET statement_timeout TO 0',
-  #     'SET lock_timeout TO 0',
+    @migration =
+      Class.new(ActiveRecord::Migration::Current) do
+        def change
+          add_index(:users, :email)
+        end
+      end.new
 
-  #     'SET statement_timeout TO 0',
-  #     'SET lock_timeout TO 0',
-  #     'DROP INDEX CONCURRENTLY "index_users_on_email"',
-  #     "SET lock_timeout TO '0'",
-  #     "SET statement_timeout TO '0'",
+    @connection.stubs(:index_valid?).returns(false)
+    calls = record_calls(@connection, :execute) { run_migration }
+    assert_calls [
+      'SET statement_timeout TO 0',
+      'SET lock_timeout TO 0',
 
-  #     'CREATE INDEX CONCURRENTLY "index_users_on_email" ON "users" ("email")',
-  #     "SET lock_timeout TO '5s'",
-  #     "SET statement_timeout TO '70s'",
-  #   ], calls
-  # end
+      'SET statement_timeout TO 0',
+      'SET lock_timeout TO 0',
+      'DROP INDEX CONCURRENTLY "index_users_on_email"',
+      "SET lock_timeout TO '0'",
+      "SET statement_timeout TO '0'",
+
+      'CREATE INDEX CONCURRENTLY "index_users_on_email" ON "users" ("email")',
+      "SET lock_timeout TO '5s'",
+      "SET statement_timeout TO '70s'",
+    ], calls
+  end
 
   def test_add_belongs_to
     @connection.create_table(:users)

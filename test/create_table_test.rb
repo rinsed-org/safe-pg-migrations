@@ -55,42 +55,44 @@ class SafePgMigrationsTest < Minitest::Test
     refute @connection.table_exists?(:users)
   end
 
-  # def test_create_table_idempotence
-  #   # Simulates an interruption between the table creation and the index creation
-  #   @connection.create_table(:users) do |t|
-  #     t.string :name, index: true
-  #     t.string :email
-  #   end
+  def test_create_table_idempotence
+    skip 'skipping disabled idempotent tests'
 
-  #   @migration =
-  #     Class.new(ActiveRecord::Migration::Current) do
-  #       def change
-  #         create_table(:users) do |t|
-  #           t.string :name, index: true
-  #           t.string :email, index: true
-  #         end
-  #       end
-  #     end.new
+    # Simulates an interruption between the table creation and the index creation
+    @connection.create_table(:users) do |t|
+      t.string :name, index: true
+      t.string :email
+    end
 
-  #   calls = record_calls(@connection, :execute) { run_migration }
-  #   indexes = ActiveRecord::Base.connection.indexes :users
-  #   refute_empty indexes
-  #   assert_equal 'index_users_on_email', indexes.first.name
+    @migration =
+      Class.new(ActiveRecord::Migration::Current) do
+        def change
+          create_table(:users) do |t|
+            t.string :name, index: true
+            t.string :email, index: true
+          end
+        end
+      end.new
 
-  #   refute_includes flat_calls(calls), 'CREATE INDEX CONCURRENTLY "index_users_on_name" ON "users" ("name")'
+    calls = record_calls(@connection, :execute) { run_migration }
+    indexes = ActiveRecord::Base.connection.indexes :users
+    refute_empty indexes
+    assert_equal 'index_users_on_email', indexes.first.name
 
-  #   assert_calls [
-  #     "SET statement_timeout TO '5s'",
-  #     'SET statement_timeout TO 0',
-  #     'SET lock_timeout TO 0',
-  #     "SET lock_timeout TO '5s'",
-  #     "SET statement_timeout TO '5s'",
-  #     'SET statement_timeout TO 0',
-  #     'SET lock_timeout TO 0',
-  #     'CREATE INDEX "index_users_on_email" ON "users" ("email")',
-  #     "SET lock_timeout TO '5s'",
-  #     "SET statement_timeout TO '5s'",
-  #     "SET statement_timeout TO '70s'",
-  #   ], calls
-  # end
+    refute_includes flat_calls(calls), 'CREATE INDEX CONCURRENTLY "index_users_on_name" ON "users" ("name")'
+
+    assert_calls [
+      "SET statement_timeout TO '5s'",
+      'SET statement_timeout TO 0',
+      'SET lock_timeout TO 0',
+      "SET lock_timeout TO '5s'",
+      "SET statement_timeout TO '5s'",
+      'SET statement_timeout TO 0',
+      'SET lock_timeout TO 0',
+      'CREATE INDEX "index_users_on_email" ON "users" ("email")',
+      "SET lock_timeout TO '5s'",
+      "SET statement_timeout TO '5s'",
+      "SET statement_timeout TO '70s'",
+    ], calls
+  end
 end
