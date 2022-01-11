@@ -76,12 +76,15 @@ module SafePgMigrations
       without_timeout { super(table_name, column_name, **options) }
     end
 
-    ruby2_keywords def remove_index(table_name, *args)
-      options = args.last.is_a?(Hash) ? args.last : { column: args.last }
+    # Rails >= 6.1 signature: remove_index(table_name, column_name = nil, **options)
+    # Rails <  6.1 signature: remove_index(table_name, options = {})
+    # NOTE: This currently only supports Rails >= 6.1
+    ruby2_keywords def remove_index(table_name, column_name = nil, **options)
       options[:algorithm] = :concurrently unless options.key?(:algorithm)
-      SafePgMigrations.say_method_call(:remove_index, table_name, **options)
 
-      without_timeout { super(table_name, **options) }
+      SafePgMigrations.say_method_call(:remove_index, table_name, column_name, **options)
+
+      without_timeout { super(table_name, column_name, **options) }
     end
 
     def backfill_column_default(table_name, column_name)

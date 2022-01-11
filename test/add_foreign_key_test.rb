@@ -106,6 +106,8 @@ class AddForeignKeyTest < MiniTest::Test
   end
 
   def test_add_foreign_key_idem_potent
+    skip 'skipping disabled idempotent tests'
+
     @connection.create_table(:users) { |t| t.string :email }
     @connection.create_table(:messages) do |t|
       t.string :message
@@ -148,6 +150,8 @@ class AddForeignKeyTest < MiniTest::Test
   end
 
   def test_add_foreign_key_idem_potent_with_column_option
+    skip 'skipping disabled idempotent tests'
+
     @connection.create_table(:users) { |t| t.string :email }
     @connection.create_table(:messages) do |t|
       t.string :message
@@ -191,6 +195,8 @@ class AddForeignKeyTest < MiniTest::Test
   end
 
   def test_add_foreign_key_idem_potent_with_other_options
+    skip 'skipping disabled idempotent tests'
+
     @connection.create_table(:users) { |t| t.string :email }
     @connection.create_table(:messages) do |t|
       t.string :message
@@ -235,6 +241,8 @@ class AddForeignKeyTest < MiniTest::Test
   end
 
   def test_add_foreign_key_idem_potent_different_tables
+    skip 'skipping disabled idempotent tests'
+
     @connection.create_table(:users) { |t| t.string :email }
     @connection.create_table(:conversations) { |t| t.string :subject }
     @connection.create_table(:messages) do |t|

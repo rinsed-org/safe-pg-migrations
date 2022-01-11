@@ -56,6 +56,8 @@ class SafePgMigrationsTest < Minitest::Test
   end
 
   def test_create_table_idempotence
+    skip 'skipping disabled idempotent tests'
+
     # Simulates an interruption between the table creation and the index creation
     @connection.create_table(:users) do |t|
       t.string :name, index: true
