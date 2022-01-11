@@ -1,0 +1,13 @@
+version: '3'
+services:
+  db:
+    container_name: 'safe-pg-migrations-postgres-db'
+    image: bitnami/postgresql:11
+    volumes:
+      - ./tmp/db:/bitnami/postgresql
+    ports:
+      - '58494:5432'
+    environment:
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: postgres
+      ALLOW_EMPTY_PASSWORD: 'yes'
