@@ -13,7 +13,10 @@ module SafePgMigrations
   # Order matters: the bottom-most plugin will have precedence
   PLUGINS = [
     BlockingActivityLogger,
-    IdemPotentStatements,
+    # RINSED: Disabled because "add_index" was a bit broken (the rollback threw an error about
+    #         specifying the name) and because the idempotency doesn't seem as robust as we might
+    #         like.
+    # IdemPotentStatements,
     StatementRetrier,
     StatementInsurer,
     UselessStatementsLogger,
