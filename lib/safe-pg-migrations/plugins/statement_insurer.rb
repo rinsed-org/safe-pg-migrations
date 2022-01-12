@@ -79,7 +79,7 @@ module SafePgMigrations
     # Rails >= 6.1 signature: remove_index(table_name, column_name = nil, **options)
     # Rails <  6.1 signature: remove_index(table_name, options = {})
     # NOTE: This currently only supports Rails >= 6.1
-    ruby2_keywords def remove_index(table_name, column_name = nil, **options)
+    def remove_index(table_name, column_name = nil, **options)
       options[:algorithm] = :concurrently unless options.key?(:algorithm)
 
       SafePgMigrations.say_method_call(:remove_index, table_name, column_name, **options)
